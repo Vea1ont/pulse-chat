@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 15s       # как часто опрашивать /metrics у всех целей
+  evaluation_interval: 15s   # как часто вычислять alerting-правила (когда добавим)
+
+scrape_configs:
+
+  # Prometheus следит сам за собой — стандартная практика
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # FastAPI сервисы отдают метрики через библиотеку prometheus-fastapi-instrumentator
+  # Она автоматически добавляет endpoint /metrics с HTTP-метриками (RPS, latency, статусы)
+  - job_name: auth
+    static_configs:
+      - targets: ["auth:8000"]   # имя сервиса в Docker-сети pulse
+
+  - job_name: chat
+    static_configs:
+      - targets: ["chat:8000"]
+
+  - job_name: notify
+    static_configs:
+      - targets: ["notify:8000"]
