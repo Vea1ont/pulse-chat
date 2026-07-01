@@ -2,7 +2,7 @@ import os
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import DeclarativeBase
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://pulse:pulse@postgres:5432/pulse")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://vealont:pulsechat@postgres:5432/pulse_chat_db")
 
 # Движок — одно соединение с БД на весь процесс
 engine = create_async_engine(DATABASE_URL)
