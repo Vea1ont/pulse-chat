@@ -5,6 +5,7 @@ networks:
 volumes:
   postgres_data:
   valkey_data:
+  kafka_data:
   glitchtip_data:
   grafana_data:
   prometheus_data:
@@ -63,6 +64,8 @@ services:
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
     ports:
       - "9092:9092"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
     networks:
       - pulse
     healthcheck:
@@ -179,6 +182,8 @@ services:
         condition: service_healthy
       valkey:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
     networks:
       - pulse
   chat:
@@ -190,7 +195,9 @@ services:
       VALKEY_URL: ${VALKEY_URL}
       KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
       GLITCHTIP_DSN: ${GLITCHTIP_DSN}
-
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    volumes:
+      - ./services/chat:/app
     ports:
       - "8002:8000"
     depends_on: # чат не стартует пока не готова база данных, кэш и очередь сообщений
@@ -210,7 +217,9 @@ services:
       VALKEY_URL: ${VALKEY_URL}
       KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
       GLITCHTIP_DSN: ${GLITCHTIP_DSN}
-
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    volumes:
+      - ./services/notify:/app
     ports:
       - "8003:8000"
     depends_on:

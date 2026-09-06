@@ -218,3 +218,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Claude
+CLAUDE.md
+
+# Личные файлы — не для чужих глаз
+CHECKLIST.md
+PLAN.md
+RUN.md
+IDEAS.md
+JOB_SEARCH.md
+

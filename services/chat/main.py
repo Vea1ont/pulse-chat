@@ -1,8 +1,10 @@
 import os
-import sentry_sdk
 
+import sentry_sdk
 from fastapi import FastAPI
+from lifespan import lifespan
 from prometheus_fastapi_instrumentator import Instrumentator
+from routers import benchmark, chats
 
 sentry_sdk.init(
     dsn=os.getenv("GLITCHTIP_DSN"),
@@ -11,9 +13,13 @@ sentry_sdk.init(
     # enable_logs=True,  # Opt-in: send logs to GlitchTip (uses disk space)
 )
 
-app = FastAPI(title="chat-service")
+app = FastAPI(title="chat-service", lifespan=lifespan)
 
 Instrumentator().instrument(app).expose(app)
+
+app.include_router(chats.router, prefix="/api/v1")
+app.include_router(benchmark.router)
+
 
 @app.get("/health")
 async def health():
