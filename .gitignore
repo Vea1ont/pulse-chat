@@ -230,3 +230,9 @@ IDEAS.md
 JOB_SEARCH.md
 TASKS.md
 DONE.md
+
+# Учебные черновики — не часть проекта
+services/chat/practice/
+services/auth/practice.py
+zcv.py
+

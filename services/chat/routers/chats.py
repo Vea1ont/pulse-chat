@@ -23,8 +23,8 @@ async def make_chat(
     is_group = len(data.member_ids) >= 2
     new_chat = Chat(name=data.name, is_group=is_group)
     db.add(new_chat)
-    await db.commit()
-    await db.refresh(new_chat)
+    await db.flush() # получаем id чата, но транзакцию не закрываем -
+                     # участники должны создаться в той же транакции
 
     all_members_ids = set([current_user_id] + data.member_ids)
 

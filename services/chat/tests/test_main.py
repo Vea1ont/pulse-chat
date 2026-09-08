@@ -14,12 +14,6 @@ def test_health():
     assert response.status_code == 200
     assert response.json() == {"service": "chat", "status": "ok"}
 
-
-def test_chats_requires_auth():
-    response = client.get("/api/v1/chats/")
-    assert response.status_code == 403
-
-
 @pytest.fixture
 def auth_headers():
     token = jwt.encode({"sub": "1"}, JWT_SECRET_KEY, algorithm=ALGORITHM)
@@ -27,7 +21,7 @@ def auth_headers():
 
 def test_my_chats_nonauthorized():
     response = client.get("/api/v1/chats/")
-    assert response.statuse_code == 401
+    assert response.status_code == 401
 
 def test_my_chats_authorized(auth_headers):
     response = client.get("/api/v1/chats/", headers=auth_headers)

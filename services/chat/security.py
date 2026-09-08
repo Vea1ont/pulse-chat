@@ -8,12 +8,15 @@ from jose import JWTError, jwt
 ALGORITHM = "HS256"
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
-security_scheme = HTTPBearer()
+security_scheme = HTTPBearer(auto_error=False)
 
 
 async def get_current_user_id(
-    credentials: HTTPAuthorizationCredentials = Depends(security_scheme),
+    credentials: HTTPAuthorizationCredentials | None = Depends(security_scheme),
 ):
+    if credentials is None:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
     token = credentials.credentials
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
