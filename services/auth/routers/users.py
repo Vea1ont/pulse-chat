@@ -15,7 +15,7 @@ async def get_all_users(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
-    current_user_id: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
 ):
     statement = (
         select(User).order_by(User.created_at.desc()).limit(limit).offset(offset)
@@ -31,7 +31,11 @@ async def me(current_user: User = Depends(get_current_user)):
 
 
 @router.get("/search", response_model=list[UserRead])
-async def user_search(q: str, db: AsyncSession = Depends(get_db)):
+async def user_search(
+    q: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+    ):
     statement = select(User).where(User.username.ilike(f"%{q}%")).limit(20)
     result = await db.execute(statement)
     users = result.scalars().all()
@@ -39,7 +43,10 @@ async def user_search(q: str, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/{user_id}", response_model=UserRead)
-async def user_by_id(user_id: int, db: AsyncSession = Depends(get_db)):
+async def user_by_id(
+    user_id: int,
+    db: AsyncSession = Depends(get_db)
+    ):
     statement = select(User).where(user_id == User.id)
     result = await db.execute(statement)
     existing_user = result.scalar_one_or_none()
@@ -69,7 +76,8 @@ async def update_me(
 
 @router.delete("/me")
 async def delete_me(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
 ):
 
     user_id = current_user.id

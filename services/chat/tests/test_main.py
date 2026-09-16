@@ -29,8 +29,10 @@ def test_my_chats_authorized(auth_headers):
     assert isinstance(response.json(), list)
     
 
-def test_cache_my_chats(auth_headers):
+def test_cache_my_chats(auth_headers, mock_valkey):
+    mock_a, mock_b = mock_valkey
     response = client.get("/api/v1/chats/", headers=auth_headers)
+    mock_a.set.assert_awaited_once()
     
 
 

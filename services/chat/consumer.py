@@ -1,5 +1,6 @@
 import json
 
+import sentry_sdk
 from aiokafka import AIOKafkaConsumer
 from cache import valkey
 
@@ -38,6 +39,7 @@ async def chat_cache_invalidation():
                     f"offset={msg.offset} value={msg.value}",
                     flush=True,
                 )
+                sentry_sdk.capture_exception(e)
 
             # коммитим в любом случае: и после успеха, и после ошибки.
             # Иначе битое сообщение читалось бы вечно и заблокировало

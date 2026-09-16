@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 ALGORITHM = "HS256"
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
-security_scheme = HTTPBearer()
+security_scheme = HTTPBearer(auto_error=False)
 
 
 def create_access_token(user_id: int) -> str:
@@ -25,9 +25,11 @@ def create_access_token(user_id: int) -> str:
 
 
 async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security_scheme),
+    credentials: HTTPAuthorizationCredentials | None = Depends(security_scheme),
     db: AsyncSession = Depends(get_db),
 ):
+    if credentials is None:
+        raise HTTPException(status_code=401, detail="Not authenticated")
 
     token = credentials.credentials
 
@@ -54,6 +56,8 @@ async def user_by_login(db: AsyncSession = Depends(get_db), email=None, username
         statement = select(User).where(User.email == email)
     elif username:
         statement = select(User).where(User.username == username)
+    else:
+        raise ValueError("user_by_login: нужен email или username")
 
     result = await db.execute(statement)
     existing_user = result.scalar_one_or_none()
